@@ -32,12 +32,6 @@ class CreateTableProductVersions extends Migration
                 ->on($productTableName)
                 ->onDelete('cascade');
 
-            $table->integer('category_id')->unsigned();
-            $table->foreign('category_id')
-                ->references('id')
-                ->on($categoriesTableName)
-                ->onDelete('cascade');
-
             $table->integer('brand_id')->unsigned();
             $table->foreign('brand_id')
                 ->references('id')
