@@ -2,47 +2,47 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Requests\Api\Category\Destroy;
-use App\Http\Requests\Api\Category\Show;
-use App\Http\Requests\Api\Category\Store;
-use App\Http\Requests\Api\Category\Update;
-use App\Services\CategoryService;
-use App\Transformers\CategoryTransformer;
+use App\Http\Requests\Api\Product\Destroy;
+use App\Http\Requests\Api\Product\Show;
+use App\Http\Requests\Api\Product\Store;
+use App\Http\Requests\Api\Product\Update;
+use App\Services\ProductService;
+use App\Transformers\ProductTransformer;
+use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 
-class CategoryController extends ApiController
+class ProductController extends ApiController
 {
     /**
-     * @var CategoryService
+     * @var ProductService
      */
-    private $categoryService;
+    private $productService;
 
     /**
-     * @var CategoryTransformer
+     * @var ProductTransformer
      */
-    private $categoryTransformer;
+    private $productTransformer;
 
     public function __construct
     (
-        CategoryService $categoryService,
-        CategoryTransformer $categoryTransformer
+        ProductService $productService,
+        ProductTransformer $productTransformer
     )
     {
-        $this->categoryService = $categoryService;
-        $this->categoryTransformer = $categoryTransformer;
+        $this->productService = $productService;
+        $this->productTransformer = $productTransformer;
     }
 
     /**
      * Display a listing of the resource.
      *
-     * @return JsonResponse|null
+     * @return \Illuminate\Http\Response
      */
     public function index(): ?JsonResponse
     {
-        $collection = $this->categoryService->getAll();
+        $productCollection = $this->productService->getAll();
 
-        return $this->respond($this->categoryTransformer->transformCollection($collection));
-    }
+        return $this->respond($this->productTransformer->transformCollection($productCollection));    }
 
     /**
      * Store a newly created resource in storage.
@@ -53,12 +53,11 @@ class CategoryController extends ApiController
     public function store(Store $request): ?JsonResponse
     {
         $structuredStoreData = array(
-            'name' => $request->name,
-            'parent_id' => $request->parent_id ?? null
+            'upc' => $request->upc,
         );
 
-        if ($new = $this->categoryService->store($structuredStoreData)) {
-            return $this->respond($this->categoryTransformer->transform($new));
+        if ($newProduct = $this->productService->store($structuredStoreData)) {
+            return $this->respond($this->productTransformer->transform($newProduct));
         }
 
         return $this->respondInternalError();
@@ -72,10 +71,10 @@ class CategoryController extends ApiController
      */
     public function show(Show $request): ?JsonResponse
     {
-        $id = $request->category;
+        $id = $request->product;
 
-        if ($model = $this->categoryService->getById((int)$id)) {
-            return $this->respond($this->categoryTransformer->transform($model));
+        if ($product = $this->productService->getById((int)$id)) {
+            return $this->respond($this->productTransformer->transform($product));
         }
 
         return $this->respondInternalError();
@@ -89,13 +88,12 @@ class CategoryController extends ApiController
      */
     public function update(Update $request): ?JsonResponse
     {
-        $id = $request->category;
+        $id = $request->product;
         $structuredUpdateData = array(
-            'name' => $request->name,
-            'parent_id' => $request->parent_id ?? null
+            'upc' => $request->upc
         );
 
-        if ($updated = $this->categoryService->updateById((int)$id, $structuredUpdateData)) {
+        if ($updatedProduct = $this->productService->updateById((int)$id, $structuredUpdateData)) {
             return $this->respondWithSuccess();
         }
 
@@ -111,9 +109,9 @@ class CategoryController extends ApiController
      */
     public function destroy(Destroy $request): ?JsonResponse
     {
-        $id = $request->category;
+        $id = $request->product;
 
-        if ($deleted = $this->categoryService->delete((int)$id)) {
+        if ($deleted = $this->productService->delete((int)$id)) {
             return $this->respondWithSuccess();
         }
 

@@ -7,4 +7,7 @@ Route::prefix('/v1')->group(function () {
     Route::resource('categories', 'Api\CategoryController')->except([
         'create', 'edit'
     ]);
+    Route::resource('products', 'Api\ProductController')->except([
+        'create', 'edit'
+    ]);
 });

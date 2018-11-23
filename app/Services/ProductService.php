@@ -3,38 +3,43 @@
  * Created by PhpStorm.
  * User: art
  * Date: 11/23/18
- * Time: 7:55 AM
+ * Time: 10:42 PM
  */
 
 namespace App\Services;
 
 
-use App\Models\Brand;
+use App\Models\Product;
 
-class BrandService extends BasicService
+class ProductService
 {
+    /**
+     * @var Product
+     */
+    private $model;
+
     public function __construct
     (
-        Brand $brandModel
+        Product $productModel
     )
     {
-        $this->model = $brandModel;
+        $this->model = $productModel;
     }
 
     /**
      * @param array $storeData
-     * @return Brand|null
+     * @return Product|null
      */
-    public function store(array $storeData): ?Brand
+    public function store(array $storeData): ?Product
     {
         return $this->model->create($storeData);
     }
 
     /**
      * @param int $id
-     * @return Brand|null
+     * @return Product|null
      */
-    public function getById(int $id): ?Brand
+    public function getById(int $id): ?Product
     {
         return $this->model->find($id);
     }
