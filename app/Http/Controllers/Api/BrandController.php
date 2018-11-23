@@ -9,7 +9,6 @@ use App\Http\Requests\Api\Brands\Update;
 use App\Services\BrandService;
 use App\Transformers\BrandTransformer;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 
 class BrandController extends ApiController
 {

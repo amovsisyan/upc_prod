@@ -3,28 +3,28 @@
  * Created by PhpStorm.
  * User: art
  * Date: 11/23/18
- * Time: 7:55 AM
+ * Time: 9:43 PM
  */
 
 namespace App\Services;
 
 
-use App\Models\Brand;
+use App\Models\Category;
 use Illuminate\Database\Eloquent\Collection;
 
-class BrandService
+class CategoryService
 {
     /**
-     * @var Brand
+     * @var Category
      */
     private $model;
 
     public function __construct
     (
-        Brand $brandModel
+        Category $categoryModel
     )
     {
-        $this->model = $brandModel;
+        $this->model = $categoryModel;
     }
 
     /**
@@ -37,18 +37,18 @@ class BrandService
 
     /**
      * @param array $storeData
-     * @return Brand|null
+     * @return Category|null
      */
-    public function store(array $storeData): ?Brand
+    public function store(array $storeData): ?Category
     {
         return $this->model->create($storeData);
     }
 
     /**
      * @param int $id
-     * @return Brand|null
+     * @return Category|null
      */
-    public function getById(int $id): ?Brand
+    public function getById(int $id): ?Category
     {
         return $this->model->find($id);
     }

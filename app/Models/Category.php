@@ -37,7 +37,7 @@ class Category extends Model
      */
     public function getParentId(): ?int
     {
-        return (int)$this->name;
+        return (int)$this->parent_id;
     }
 
     /*
