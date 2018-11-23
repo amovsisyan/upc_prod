@@ -10,9 +10,8 @@ namespace App\Services;
 
 
 use App\Models\Category;
-use Illuminate\Database\Eloquent\Collection;
 
-class CategoryService
+class CategoryService extends BasicService
 {
     /**
      * @var Category
@@ -25,14 +24,6 @@ class CategoryService
     )
     {
         $this->model = $categoryModel;
-    }
-
-    /**
-     * @return Collection|null
-     */
-    public function getAll(): ?Collection
-    {
-        return $this->model->all();
     }
 
     /**
@@ -51,26 +42,5 @@ class CategoryService
     public function getById(int $id): ?Category
     {
         return $this->model->find($id);
-    }
-
-    /**
-     * @param int $id
-     * @param array $updateData
-     * @return bool
-     */
-    public function updateById(int $id, array $updateData): bool
-    {
-        return (bool)$this->model->where('id', $id)
-            ->update($updateData);
-    }
-
-    /**
-     * @param int $id
-     * @return bool
-     * @throws \Exception
-     */
-    public function delete(int $id): bool
-    {
-        return (bool)$this->getById($id)->delete();
     }
 }

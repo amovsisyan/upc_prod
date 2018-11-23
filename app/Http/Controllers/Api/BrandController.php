@@ -39,9 +39,9 @@ class BrandController extends ApiController
      */
     public function index(): ?JsonResponse
     {
-        $brandCollection = $this->brandService->getAll();
+        $collection = $this->brandService->getAll();
 
-        return $this->respond($this->brandTransformer->transformCollection($brandCollection));
+        return $this->respond($this->brandTransformer->transformCollection($collection));
     }
 
     /**
@@ -56,8 +56,8 @@ class BrandController extends ApiController
             'name' => $request->name
         );
 
-        if ($newBrand = $this->brandService->store($structuredStoreData)) {
-            return $this->respond($this->brandTransformer->transform($newBrand));
+        if ($new = $this->brandService->store($structuredStoreData)) {
+            return $this->respond($this->brandTransformer->transform($new));
         }
 
         return $this->respondInternalError();
@@ -73,8 +73,8 @@ class BrandController extends ApiController
     {
         $id = $request->brand;
 
-        if ($brand = $this->brandService->getById((int)$id)) {
-            return $this->respond($this->brandTransformer->transform($brand));
+        if ($model = $this->brandService->getById((int)$id)) {
+            return $this->respond($this->brandTransformer->transform($model));
         }
 
         return $this->respondInternalError();
@@ -93,7 +93,7 @@ class BrandController extends ApiController
             'name' => $request->name
         );
 
-        if ($updatedBrand = $this->brandService->updateById((int)$id, $structuredUpdateData)) {
+        if ($updated = $this->brandService->updateById((int)$id, $structuredUpdateData)) {
             return $this->respondWithSuccess();
         }
 
@@ -111,7 +111,7 @@ class BrandController extends ApiController
     {
         $id = $request->brand;
 
-        if ($updatedBrand = $this->brandService->delete((int)$id)) {
+        if ($deleted = $this->brandService->delete((int)$id)) {
             return $this->respondWithSuccess();
         }
 
