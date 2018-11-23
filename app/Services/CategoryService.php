@@ -13,11 +13,6 @@ use App\Models\Category;
 
 class CategoryService extends BasicService
 {
-    /**
-     * @var Category
-     */
-    private $model;
-
     public function __construct
     (
         Category $categoryModel

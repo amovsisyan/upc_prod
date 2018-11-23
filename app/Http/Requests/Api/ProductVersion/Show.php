@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Http\Requests\Api\Product;
+namespace App\Http\Requests\Api\ProductVersion;
 
 use App\Http\Requests\Api\ApiRequestCombined;
+use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
 class Show extends ApiRequestCombined
@@ -24,10 +25,10 @@ class Show extends ApiRequestCombined
      */
     public function rules()
     {
-        $tableName = config('app.database.dbNames.products');
+        $tableName = config('app.database.dbNames.product_versions');
 
         return [
-            'product' => ['required', 'integer', Rule::exists($tableName, 'id')]
+            'product_version' => ['required', 'integer', Rule::exists($tableName, 'id')]
         ];
     }
 }

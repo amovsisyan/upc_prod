@@ -28,7 +28,7 @@ class Update extends ApiRequestCombined
 
         return [
             'brand' => ['required', Rule::exists($tableName, 'id')],
-            'name' => ['required', 'string', 'max:' . config('app.database.dbColumnLengths.' . $tableName . '.name')], // todo if needed unique
+            'name' => ['string', 'max:' . config('app.database.dbColumnLengths.' . $tableName . '.name')], // todo if needed unique
         ];
     }
 }
