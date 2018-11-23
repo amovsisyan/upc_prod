@@ -13,11 +13,6 @@ use App\Models\Product;
 
 class ProductService
 {
-    /**
-     * @var Product
-     */
-    private $model;
-
     public function __construct
     (
         Product $productModel

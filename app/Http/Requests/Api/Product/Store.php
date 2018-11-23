@@ -27,7 +27,6 @@ class Store extends ApiRequestCombined
         $tableName = config('app.database.dbNames.products');
 
         return [
-            'product' => ['required', Rule::exists($tableName, 'id')],
             'upc' => ['required', 'integer', 'max:999999999', Rule::unique($tableName, 'upc')]
         ];
     }

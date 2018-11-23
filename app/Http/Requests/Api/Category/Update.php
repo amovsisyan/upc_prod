@@ -28,7 +28,7 @@ class Update extends ApiRequestCombined
 
         return [
             'category' => ['required', Rule::exists($tableName, 'id')],
-            'name' => ['required', 'string', 'max:' . config('app.database.dbColumnLengths.' . $tableName . '.name')], // todo if needed unique
+            'name' => ['string', 'max:' . config('app.database.dbColumnLengths.' . $tableName . '.name')], // todo if needed unique
             'parent_id' => ['integer', Rule::exists($tableName, 'id')]
         ];
     }

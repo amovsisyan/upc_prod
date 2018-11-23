@@ -52,11 +52,7 @@ class BrandController extends ApiController
      */
     public function store(Store $request): ?JsonResponse
     {
-        $structuredStoreData = array(
-            'name' => $request->name
-        );
-
-        if ($new = $this->brandService->store($structuredStoreData)) {
+        if ($new = $this->brandService->store($request->only('name'))) {
             return $this->respond($this->brandTransformer->transform($new));
         }
 
@@ -89,11 +85,8 @@ class BrandController extends ApiController
     public function update(Update $request): ?JsonResponse
     {
         $id = $request->brand;
-        $structuredUpdateData = array(
-            'name' => $request->name
-        );
 
-        if ($updated = $this->brandService->updateById((int)$id, $structuredUpdateData)) {
+        if ($updated = $this->brandService->updateById((int)$id, $request->only('name'))) {
             return $this->respondWithSuccess();
         }
 

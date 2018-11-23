@@ -52,12 +52,7 @@ class CategoryController extends ApiController
      */
     public function store(Store $request): ?JsonResponse
     {
-        $structuredStoreData = array(
-            'name' => $request->name,
-            'parent_id' => $request->parent_id ?? null
-        );
-
-        if ($new = $this->categoryService->store($structuredStoreData)) {
+        if ($new = $this->categoryService->store($request->only(['name', 'parent_id']))) {
             return $this->respond($this->categoryTransformer->transform($new));
         }
 
@@ -90,12 +85,8 @@ class CategoryController extends ApiController
     public function update(Update $request): ?JsonResponse
     {
         $id = $request->category;
-        $structuredUpdateData = array(
-            'name' => $request->name,
-            'parent_id' => $request->parent_id ?? null
-        );
 
-        if ($updated = $this->categoryService->updateById((int)$id, $structuredUpdateData)) {
+        if ($updated = $this->categoryService->updateById((int)$id, $request->only(['name', 'parent_id']))) {
             return $this->respondWithSuccess();
         }
 

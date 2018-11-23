@@ -8,7 +8,6 @@ use App\Http\Requests\Api\Product\Store;
 use App\Http\Requests\Api\Product\Update;
 use App\Services\ProductService;
 use App\Transformers\ProductTransformer;
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 
 class ProductController extends ApiController
@@ -42,7 +41,8 @@ class ProductController extends ApiController
     {
         $productCollection = $this->productService->getAll();
 
-        return $this->respond($this->productTransformer->transformCollection($productCollection));    }
+        return $this->respond($this->productTransformer->transformCollection($productCollection));
+    }
 
     /**
      * Store a newly created resource in storage.
@@ -52,12 +52,8 @@ class ProductController extends ApiController
      */
     public function store(Store $request): ?JsonResponse
     {
-        $structuredStoreData = array(
-            'upc' => $request->upc,
-        );
-
-        if ($newProduct = $this->productService->store($structuredStoreData)) {
-            return $this->respond($this->productTransformer->transform($newProduct));
+        if ($new = $this->productService->store($request->only(['upc']))) {
+            return $this->respond($this->productTransformer->transform($new));
         }
 
         return $this->respondInternalError();
@@ -73,8 +69,8 @@ class ProductController extends ApiController
     {
         $id = $request->product;
 
-        if ($product = $this->productService->getById((int)$id)) {
-            return $this->respond($this->productTransformer->transform($product));
+        if ($model = $this->productService->getById((int)$id)) {
+            return $this->respond($this->productTransformer->transform($model));
         }
 
         return $this->respondInternalError();
@@ -89,11 +85,8 @@ class ProductController extends ApiController
     public function update(Update $request): ?JsonResponse
     {
         $id = $request->product;
-        $structuredUpdateData = array(
-            'upc' => $request->upc
-        );
 
-        if ($updatedProduct = $this->productService->updateById((int)$id, $structuredUpdateData)) {
+        if ($updated = $this->productService->updateById((int)$id, $request->only(['upc']))) {
             return $this->respondWithSuccess();
         }
 
