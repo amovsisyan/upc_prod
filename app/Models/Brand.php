@@ -14,6 +14,14 @@ class Brand extends Model
     ];
 
     /**
+     * @return int|null
+     */
+    public function getId(): ?int
+    {
+        return (int)$this->id;
+    }
+
+    /**
      * @return null|string
      */
     public function getName(): ?string

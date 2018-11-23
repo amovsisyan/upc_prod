@@ -24,6 +24,14 @@ class ProductVersion extends Model
     /**
      * @return int|null
      */
+    public function getId(): ?int
+    {
+        return (int)$this->id;
+    }
+
+    /**
+     * @return int|null
+     */
     public function getProductId(): ?int
     {
         return (int)$this->product_id;
