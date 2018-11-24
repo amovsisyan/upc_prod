@@ -55,6 +55,17 @@ return [
             'visibility' => 'public',
         ],
 
+        /**
+         * This is path for product attachments
+         * f.e. company logos
+         */
+        'productAttachments' => [
+            'driver' => 'local',
+            'root' => storage_path('app/public/product/attachments'),
+            'url' => env('APP_URL').'/storage/product/attachments',
+            'visibility' => 'public',
+        ],
+
         's3' => [
             'driver' => 's3',
             'key' => env('AWS_ACCESS_KEY_ID'),

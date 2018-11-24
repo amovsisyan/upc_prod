@@ -13,4 +13,7 @@ Route::prefix('/v1')->group(function () {
     Route::resource('product-versions', 'Api\ProductVersionController')->except([
         'create', 'edit'
     ]);
+    Route::resource('attachments', 'Api\AttachmentController')->except([
+        'create', 'edit'
+    ]);
 });

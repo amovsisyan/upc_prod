@@ -30,7 +30,6 @@ class ProductVersionService extends BasicService
         return $this->model->create($storeData);
     }
 
-
     /**
      * @param int $id
      * @return ProductVersion|null

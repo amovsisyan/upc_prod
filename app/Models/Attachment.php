@@ -25,7 +25,7 @@ class Attachment extends Model
     /**
      * @return int|null
      */
-    public function getDescription(): ?int
+    public function getProductId(): ?int
     {
         return (int)$this->product_id;
     }
