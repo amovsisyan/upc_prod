@@ -30,6 +30,7 @@ class Store extends ApiRequestCombined
 
         $columns = [
             'title' => config('app.database.dbColumnLengths.' . $productVersionsTableName . '.title'),
+            'description' => config('app.database.dbColumnLengths.' . $productVersionsTableName . '.description'),
             'active' => config('app.database.dbColumnLengths.' . $productVersionsTableName . '.active'),
         ];
 
@@ -37,7 +38,7 @@ class Store extends ApiRequestCombined
             'product_id' => ['required', 'integer', Rule::exists($productsTableName, 'id')],
             'brand_id' => ['required', 'integer', Rule::exists($brandsTableName, 'id')],
             'title' => ['required', 'string', 'max:' . $columns['title']],
-            'description' => ['required', 'string', 'max:2000'],
+            'description' => ['required', 'string', 'max:' . $columns['description']],
             'width' => ['required', 'integer'],
             'height' => ['required', 'integer'],
             'length' => ['required', 'integer'],
