@@ -7,7 +7,6 @@ use App\Http\Requests\Api\Product\Show;
 use App\Http\Requests\Api\Product\Store;
 use App\Http\Requests\Api\Product\Update;
 use App\Services\ProductService;
-use App\Transformers\ProductTransformer;
 use Illuminate\Http\JsonResponse;
 
 class ProductController extends ApiController
@@ -17,19 +16,12 @@ class ProductController extends ApiController
      */
     private $productService;
 
-    /**
-     * @var ProductTransformer
-     */
-    private $productTransformer;
-
     public function __construct
     (
-        ProductService $productService,
-        ProductTransformer $productTransformer
+        ProductService $productService
     )
     {
         $this->productService = $productService;
-        $this->productTransformer = $productTransformer;
     }
 
     /**
@@ -41,7 +33,7 @@ class ProductController extends ApiController
     {
         $collection = $this->productService->getAll();
 
-        return $this->respond($this->productTransformer->transformCollection($collection));
+        return $this->respond($collection->toArray());
     }
 
     /**
@@ -53,7 +45,7 @@ class ProductController extends ApiController
     public function store(Store $request): ?JsonResponse
     {
         if ($new = $this->productService->store($request->only(['upc']))) {
-            return $this->respond($this->productTransformer->transform($new));
+            return $this->respond($new->toArray());
         }
 
         return $this->respondInternalError();
@@ -68,9 +60,10 @@ class ProductController extends ApiController
     public function show(Show $request): ?JsonResponse
     {
         $id = $request->product;
+        $with = !empty($request->only('with')) ? array_values($request->only('with')) : array();
 
-        if ($model = $this->productService->getById((int)$id)) {
-            return $this->respond($this->productTransformer->transform($model));
+        if ($model = $this->productService->getById((int)$id, $with)) {
+            return $this->respond($model->toArray());
         }
 
         return $this->respondInternalError();

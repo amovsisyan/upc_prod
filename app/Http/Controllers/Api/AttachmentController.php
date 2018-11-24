@@ -7,7 +7,6 @@ use App\Http\Requests\Api\Attachment\Show;
 use App\Http\Requests\Api\Attachment\Store;
 use App\Http\Requests\Api\Attachment\Update;
 use App\Services\AttachmentService;
-use App\Transformers\AttachmentTransformer;
 use Illuminate\Http\JsonResponse;
 
 class AttachmentController extends ApiController
@@ -17,19 +16,12 @@ class AttachmentController extends ApiController
      */
     private $attachmentService;
 
-    /**
-     * @var
-     */
-    private $attachmentTransformer;
-
     public function __construct
     (
-        AttachmentService $attachmentService,
-        AttachmentTransformer $attachmentTransformer
+        AttachmentService $attachmentService
     )
     {
         $this->attachmentService = $attachmentService;
-        $this->attachmentTransformer = $attachmentTransformer;
     }
 
     /**
@@ -41,7 +33,7 @@ class AttachmentController extends ApiController
     {
         $collection = $this->attachmentService->getAll();
 
-        return $this->respond($this->attachmentTransformer->transformCollection($collection));
+        return $this->respond($collection->toArray());
     }
 
     /**
@@ -53,8 +45,9 @@ class AttachmentController extends ApiController
     public function store(Store $request): ?JsonResponse
     {
         if ($newOnes = $this->attachmentService->store($request->only(array('product_id', 'images', 'videos')))) {
-            return $this->respond($this->attachmentTransformer->transformCollection($newOnes));
+            return $this->respond($newOnes->toArray());
         }
+
         return $this->respondInternalError();
     }
 
@@ -67,9 +60,10 @@ class AttachmentController extends ApiController
     public function show(Show $request): ?JsonResponse
     {
         $id = $request->attachment;
+        $with = !empty($request->only('with')) ? array_values($request->only('with')) : array();
 
-        if ($model = $this->attachmentService->getById((int)$id)) {
-            return $this->respond($this->attachmentTransformer->transform($model));
+        if ($model = $this->attachmentService->getById((int)$id, $with)) {
+            return $this->respond($model->toArray());
         }
 
         return $this->respondInternalError();

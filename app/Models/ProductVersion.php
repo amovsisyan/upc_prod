@@ -21,6 +21,10 @@ class ProductVersion extends Model
         'active',
     ];
 
+    protected $hidden = [
+        'updated_at',
+    ];
+
     /**
      * @return int|null
      */

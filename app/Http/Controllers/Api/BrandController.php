@@ -7,7 +7,6 @@ use App\Http\Requests\Api\Brands\Show;
 use App\Http\Requests\Api\Brands\Store;
 use App\Http\Requests\Api\Brands\Update;
 use App\Services\BrandService;
-use App\Transformers\BrandTransformer;
 use Illuminate\Http\JsonResponse;
 
 class BrandController extends ApiController
@@ -17,19 +16,12 @@ class BrandController extends ApiController
      */
     private $brandService;
 
-    /**
-     * @var BrandTransformer
-     */
-    private $brandTransformer;
-
     public function __construct
     (
-        BrandService $brandService,
-        BrandTransformer $brandTransformer
+        BrandService $brandService
     )
     {
         $this->brandService = $brandService;
-        $this->brandTransformer = $brandTransformer;
     }
 
     /**
@@ -41,7 +33,7 @@ class BrandController extends ApiController
     {
         $collection = $this->brandService->getAll();
 
-        return $this->respond($this->brandTransformer->transformCollection($collection));
+        return $this->respond($collection->toArray());
     }
 
     /**
@@ -53,7 +45,7 @@ class BrandController extends ApiController
     public function store(Store $request): ?JsonResponse
     {
         if ($new = $this->brandService->store($request->only('name'))) {
-            return $this->respond($this->brandTransformer->transform($new));
+            return $this->respond($new->toArray());
         }
 
         return $this->respondInternalError();
@@ -68,9 +60,10 @@ class BrandController extends ApiController
     public function show(Show $request): ?JsonResponse
     {
         $id = $request->brand;
+        $with = !empty($request->only('with')) ? array_values($request->only('with')) : array();
 
-        if ($model = $this->brandService->getById((int)$id)) {
-            return $this->respond($this->brandTransformer->transform($model));
+        if ($model = $this->brandService->getById((int)$id, $with)) {
+            return $this->respond($model->toArray());
         }
 
         return $this->respondInternalError();

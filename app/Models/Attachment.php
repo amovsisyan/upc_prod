@@ -14,6 +14,10 @@ class Attachment extends Model
         'path',
     ];
 
+    protected $hidden = [
+        'updated_at',
+    ];
+
     /**
      * @return int|null
      */
@@ -50,5 +54,18 @@ class Attachment extends Model
     public function product(): BelongsTo
     {
         return $this->belongsTo('App\Models\Product', 'product_id', 'id');
+    }
+
+    /**
+     * Convert the model instance to an array.
+     *
+     * @return array
+     */
+    public function toArray()
+    {
+        $attributes = $this->attributesToArray();
+        $attributes['path'] = \Storage::disk('productAttachments')->url($attributes['path']);
+
+        return array_merge($attributes, $this->relationsToArray());
     }
 }

@@ -59,11 +59,12 @@ class AttachmentService extends BasicService
 
     /**
      * @param int $id
+     * @param array $with
      * @return Attachment|null
      */
-    public function getById(int $id): ?Attachment
+    public function getById(int $id, array $with = array()): ?Attachment
     {
-        return $this->model->find($id);
+        return $this->model->where('id', $id)->with($with)->first();
     }
 
     /**

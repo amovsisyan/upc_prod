@@ -7,7 +7,6 @@ use App\Http\Requests\Api\ProductVersion\Show;
 use App\Http\Requests\Api\ProductVersion\Store;
 use App\Http\Requests\Api\ProductVersion\Update;
 use App\Services\ProductVersionService;
-use App\Transformers\ProductVersionTransformer;
 use Illuminate\Http\JsonResponse;
 
 
@@ -18,19 +17,12 @@ class ProductVersionController extends ApiController
      */
     private $productVersionService;
 
-    /**
-     * @var ProductVersionTransformer
-     */
-    private $productVersionTransformer;
-
     public function __construct
     (
-        ProductVersionService $productVersionService,
-        ProductVersionTransformer $productVersionTransformer
+        ProductVersionService $productVersionService
     )
     {
         $this->productVersionService = $productVersionService;
-        $this->productVersionTransformer = $productVersionTransformer;
     }
 
     /**
@@ -42,7 +34,7 @@ class ProductVersionController extends ApiController
     {
         $collection = $this->productVersionService->getAll();
 
-        return $this->respond($this->productVersionTransformer->transformCollection($collection));
+        return $this->respond($collection->toArray());
     }
 
     /**
@@ -56,7 +48,7 @@ class ProductVersionController extends ApiController
         if ($new = $this->productVersionService
             ->store($request->only(array('product_id', 'brand_id', 'title', 'description', 'width', 'height', 'length', 'weight','active')))
         ) {
-            return $this->respond($this->productVersionTransformer->transform($new));
+            return $this->respond($new->toArray());
         }
 
         return $this->respondInternalError();
@@ -71,9 +63,10 @@ class ProductVersionController extends ApiController
     public function show(Show $request): ?JsonResponse
     {
         $id = $request->product_version;
+        $with = !empty($request->only('with')) ? array_values($request->only('with')) : array();
 
-        if ($model = $this->productVersionService->getById((int)$id)) {
-            return $this->respond($this->productVersionTransformer->transform($model));
+        if ($model = $this->productVersionService->getById((int)$id, $with)) {
+            return $this->respond($model->toArray());
         }
 
         return $this->respondInternalError();

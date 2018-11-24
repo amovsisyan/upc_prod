@@ -27,7 +27,8 @@ class Show extends ApiRequestCombined
         $tableName = config('app.database.dbNames.attachments');
 
         return [
-            'attachment' => ['required', Rule::exists($tableName, 'id')]
+            'attachment' => ['required', Rule::exists($tableName, 'id')],
+            'with' => [Rule::in(array('product'))]
         ];
     }
 }

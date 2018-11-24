@@ -14,6 +14,10 @@ class Product extends Model
         'upc',
     ];
 
+    protected $hidden = [
+        'updated_at',
+    ];
+
     /**
      * @return int|null
      */
@@ -55,7 +59,7 @@ class Product extends Model
     /**
      * @return BelongsToMany // todo check and update, as it is not many to many
      */
-    public function category(): belongsToMany
+    public function categories(): belongsToMany
     {
         return $this->belongsToMany('App\Models\Category', 'category_product', 'product_id', 'category_id')
             ->whereNull('parent_id');
@@ -64,7 +68,7 @@ class Product extends Model
     /**
      * @return BelongsToMany
      */
-    public function subCategory(): belongsToMany
+    public function subCategories(): belongsToMany
     {
         return $this->belongsToMany('App\Models\Category', 'category_product', 'product_id', 'category_id')
             ->whereNotNull('parent_id');

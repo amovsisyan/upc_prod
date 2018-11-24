@@ -27,7 +27,8 @@ class Show extends ApiRequestCombined
         $tableName = config('app.database.dbNames.brands');
 
         return [
-            'brand' => ['required', Rule::exists($tableName, 'id')]
+            'brand' => ['required', Rule::exists($tableName, 'id')],
+            'with' => [Rule::in(array('productVersions', 'productVersions.product'))]
         ];
     }
 }

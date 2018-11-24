@@ -16,6 +16,10 @@ class Category extends Model
         'parent_id',
     ];
 
+    protected $hidden = [
+        'updated_at',
+    ];
+
     /**
      * @return int|null
      */
@@ -57,7 +61,7 @@ class Category extends Model
     /**
      * @return BelongsTo
      */
-    public function parent(): BelongsTo
+    public function parentCategory(): BelongsTo
     {
         return $this->belongsTo('App\Models\Category', 'parent_id', 'id');
     }
@@ -67,6 +71,6 @@ class Category extends Model
      */
     public function products(): belongsToMany
     {
-        return $this->belongsToMany('App\Models\Products', 'category_product', 'category_id', 'product_id');
+        return $this->belongsToMany('App\Models\Product', 'category_product', 'category_id', 'product_id');
     }
 }

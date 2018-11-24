@@ -32,10 +32,11 @@ class BrandService extends BasicService
 
     /**
      * @param int $id
+     * @param array $with
      * @return Brand|null
      */
-    public function getById(int $id): ?Brand
+    public function getById(int $id, array $with = array()): ?Brand
     {
-        return $this->model->find($id);
+        return $this->model->where('id', $id)->with($with)->first();
     }
 }
