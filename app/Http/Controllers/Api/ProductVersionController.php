@@ -40,9 +40,9 @@ class ProductVersionController extends ApiController
      */
     public function index(): ?JsonResponse
     {
-        $productCollection = $this->productVersionService->getAll();
+        $collection = $this->productVersionService->getAll();
 
-        return $this->respond($this->productVersionTransformer->transformCollection($productCollection));
+        return $this->respond($this->productVersionTransformer->transformCollection($collection));
     }
 
     /**
@@ -101,8 +101,9 @@ class ProductVersionController extends ApiController
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param Destroy $request
+     * @return JsonResponse|null
+     * @throws \Exception
      */
     public function destroy(Destroy $request): ?JsonResponse
     {

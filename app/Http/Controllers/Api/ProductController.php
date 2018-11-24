@@ -39,9 +39,9 @@ class ProductController extends ApiController
      */
     public function index(): ?JsonResponse
     {
-        $productCollection = $this->productService->getAll();
+        $collection = $this->productService->getAll();
 
-        return $this->respond($this->productTransformer->transformCollection($productCollection));
+        return $this->respond($this->productTransformer->transformCollection($collection));
     }
 
     /**
