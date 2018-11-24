@@ -7,7 +7,6 @@ use App\Http\Requests\Api\Category\Show;
 use App\Http\Requests\Api\Category\Store;
 use App\Http\Requests\Api\Category\Update;
 use App\Services\CategoryService;
-use App\Transformers\CategoryTransformer;
 use Illuminate\Http\JsonResponse;
 
 class CategoryController extends ApiController
@@ -17,19 +16,12 @@ class CategoryController extends ApiController
      */
     private $categoryService;
 
-    /**
-     * @var CategoryTransformer
-     */
-    private $categoryTransformer;
-
     public function __construct
     (
-        CategoryService $categoryService,
-        CategoryTransformer $categoryTransformer
+        CategoryService $categoryService
     )
     {
         $this->categoryService = $categoryService;
-        $this->categoryTransformer = $categoryTransformer;
     }
 
     /**
@@ -41,7 +33,7 @@ class CategoryController extends ApiController
     {
         $collection = $this->categoryService->getAll();
 
-        return $this->respond($this->categoryTransformer->transformCollection($collection));
+        return $this->respond($collection->toArray());
     }
 
     /**
@@ -53,7 +45,7 @@ class CategoryController extends ApiController
     public function store(Store $request): ?JsonResponse
     {
         if ($new = $this->categoryService->store($request->only(['name', 'parent_id']))) {
-            return $this->respond($this->categoryTransformer->transform($new));
+            return $this->respond($new->toArray());
         }
 
         return $this->respondInternalError();
@@ -68,9 +60,10 @@ class CategoryController extends ApiController
     public function show(Show $request): ?JsonResponse
     {
         $id = $request->category;
+        $with = !empty($request->only('with')) ? array_values($request->only('with')) : array();
 
-        if ($model = $this->categoryService->getById((int)$id)) {
-            return $this->respond($this->categoryTransformer->transform($model));
+        if ($model = $this->categoryService->getById((int)$id, $with)) {
+            return $this->respond($model->toArray());
         }
 
         return $this->respondInternalError();

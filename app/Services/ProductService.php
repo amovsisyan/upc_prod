@@ -32,10 +32,11 @@ class ProductService
 
     /**
      * @param int $id
+     * @param array $with
      * @return Product|null
      */
-    public function getById(int $id): ?Product
+    public function getById(int $id, array $with = array()): ?Product
     {
-        return $this->model->find($id);
+        return $this->model->where('id', $id)->with($with)->first();
     }
 }

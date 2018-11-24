@@ -32,10 +32,11 @@ class CategoryService extends BasicService
 
     /**
      * @param int $id
+     * @param array $with
      * @return Category|null
      */
-    public function getById(int $id): ?Category
+    public function getById(int $id, array $with = array()): ?Category
     {
-        return $this->model->find($id);
+        return $this->model->where('id', $id)->with($with)->first();
     }
 }

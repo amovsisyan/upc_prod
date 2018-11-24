@@ -13,6 +13,10 @@ class Brand extends Model
         'name',
     ];
 
+    protected $hidden = [
+        'updated_at',
+    ];
+
     /**
      * @return int|null
      */
@@ -40,6 +44,6 @@ class Brand extends Model
      */
     public function productVersions(): HasMany
     {
-        return $this->hasMany('App\Models\ProductVersion', 'product_id', 'id');
+        return $this->hasMany('App\Models\ProductVersion', 'brand_id', 'id');
     }
 }

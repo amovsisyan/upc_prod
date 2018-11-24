@@ -27,7 +27,8 @@ class Show extends ApiRequestCombined
         $tableName = config('app.database.dbNames.categories');
 
         return [
-            'category' => ['required', Rule::exists($tableName, 'id')]
+            'category' => ['required', Rule::exists($tableName, 'id')],
+            'with' => [Rule::in(array('subCategories', 'parentCategory', 'products'))]
         ];
     }
 }

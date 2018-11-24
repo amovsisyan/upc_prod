@@ -32,10 +32,11 @@ class ProductVersionService extends BasicService
 
     /**
      * @param int $id
+     * @param array $with
      * @return ProductVersion|null
      */
-    public function getById(int $id): ?ProductVersion
+    public function getById(int $id, array $with = array()): ?ProductVersion
     {
-        return $this->model->find($id);
+        return $this->model->where('id', $id)->with($with)->first();
     }
 }
