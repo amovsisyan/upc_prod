@@ -15,15 +15,16 @@ $dbNames = [
 
 $dbColumnLengths = [
     $dbNames['brands'] => [
-        'name' => 50,
+        'name' => 150,
     ],
 
     $dbNames['categories'] => [
-        'name' => 50,
+        'name' => 150,
     ],
 
     $dbNames['product_versions'] => [
-        'title' => 100,
+        'title' => 150,
+        'description' => 150,
         'active' => [0, 1]
     ],
 
