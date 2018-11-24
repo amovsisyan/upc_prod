@@ -2,11 +2,15 @@
 
 namespace App\Exceptions;
 
+use App\Traits\ApiJsonResponseTrait;
 use Exception;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class Handler extends ExceptionHandler
 {
+    use ApiJsonResponseTrait;
+
     /**
      * A list of the exception types that are not reported.
      *
@@ -40,12 +44,29 @@ class Handler extends ExceptionHandler
     /**
      * Render an exception into an HTTP response.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Exception  $exception
-     * @return \Illuminate\Http\Response
+     * @param \Illuminate\Http\Request $request
+     * @param Exception $exception
+     * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\Response|\Symfony\Component\HttpFoundation\Response
      */
     public function render($request, Exception $exception)
     {
+        if ($exception instanceof NotFoundHttpException) {
+            if ($this->isApi($request->path())) {
+                $this->setStatusCode(404);
+                return $this->respondWithError('Not Found');
+            }
+        }
+
         return parent::render($request, $exception);
+    }
+
+    /**
+     * @param $path
+     * @return bool
+     */
+    private function isApi($path)
+    {
+        // todo in helper, or find solution in expectJson|wantsJson| or some other solution
+        return substr($path, 0, 3) === "api";
     }
 }
