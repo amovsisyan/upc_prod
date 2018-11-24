@@ -16,11 +16,13 @@ class Update extends ApiRequestCombined
     public function all($keys = null)
     {
         $productId = parent::all('product_id')['product_id'];
+        $imgLen = isset(parent::all($keys)['images']) ? count(parent::all($keys)['images']) : 0;
+        $vidLen = isset(parent::all($keys)['videos']) ? count(parent::all($keys)['videos']) : 0;
 
         $routeParamsMergedWithRequest =  array_replace_recursive(
             parent::all($keys),
             $this->route()->parameters(),
-            array('already_attached_quantity' => Attachment::where('product_id', $productId)->count())
+            array('already_attached_quantity' => Attachment::where('product_id', $productId)->count() + $imgLen + $vidLen)
         );
 
         return $routeParamsMergedWithRequest;
