@@ -28,7 +28,7 @@ class Show extends ApiRequestCombined
 
         return [
             'product' => ['required', 'integer', Rule::exists($tableName, 'id')],
-            'with' => [Rule::in(array('attachments', 'productVersions', 'categories', 'subCategories'))]
+            'with' => [Rule::in(array('attachments', 'productVersions', 'categories', 'subCategories', 'activeProductVersions'))]
         ];
     }
 }
