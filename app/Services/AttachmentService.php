@@ -41,6 +41,7 @@ class AttachmentService extends BasicService
             $storeDatum  =array(
                 'product_id' => $storeData['product_id'],
                 'path' => $storeData['product_id'] . '/' . $fileName,
+                'thumbnail' => $this->getDimensions($file),
             );
 
             $newOne = $this->model->create($storeDatum);
@@ -88,5 +89,20 @@ class AttachmentService extends BasicService
     private function makeFileName(string $extension): string
     {
         return md5(microtime()).'.'.$extension;
+    }
+
+    /**
+     * @param $file
+     * @return string
+     */
+    private function getDimensions($file)
+    {
+        // sure not the best way
+        $dmsPosition = 3;
+        $dmsData = explode('"', getimagesize($file)[$dmsPosition]);
+
+        $widthPosition = 1;
+        $heightPosition = 3;
+        return ($dmsData[$widthPosition] ?? 0) . 'x' . ($dmsData[$heightPosition] ?? 0);
     }
 }

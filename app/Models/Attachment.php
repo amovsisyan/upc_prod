@@ -12,6 +12,7 @@ class Attachment extends Model
     protected $fillable = [
         'product_id',
         'path',
+        'thumbnail',
     ];
 
     protected $hidden = [
@@ -40,6 +41,14 @@ class Attachment extends Model
     public function getPath(): ?string
     {
         return (string)$this->path;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getThumbnail(): ?string
+    {
+        return (string)$this->thumbnail;
     }
 
     /*

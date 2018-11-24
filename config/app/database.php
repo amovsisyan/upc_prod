@@ -30,6 +30,7 @@ $dbColumnLengths = [
 
     $dbNames['attachments'] => [
         'path' => 100,
+        'thumbnail' => 30,
     ],
 ];
 
