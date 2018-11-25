@@ -6,6 +6,7 @@ use App\Http\Requests\Api\Product\Destroy;
 use App\Http\Requests\Api\Product\Show;
 use App\Http\Requests\Api\Product\Store;
 use App\Http\Requests\Api\Product\Update;
+use App\Http\Requests\Api\Product\UpdateCategory;
 use App\Services\ProductService;
 use Illuminate\Http\JsonResponse;
 
@@ -88,6 +89,21 @@ class ProductController extends ApiController
 
         if ($updated = $this->productService->updateById((int)$id, $request->only(['upc']))) {
             return $this->respondWithSuccess();
+        }
+
+        return $this->respondInternalError();
+    }
+
+    /**
+     * @param UpdateCategory $request
+     * @return JsonResponse|null
+     */
+    public function updateCategory(UpdateCategory $request): ?JsonResponse
+    {
+        $id = $request->product;
+
+        if ($updated = $this->productService->updateCategoriesById((int)$id, $request->only(['categories', 'subCategories']))) {
+            return $this->respond($updated->toArray());
         }
 
         return $this->respondInternalError();

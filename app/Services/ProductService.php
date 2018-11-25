@@ -15,7 +15,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\File;
 
-class ProductService
+class ProductService extends BasicService
 {
     public function __construct
     (
@@ -68,6 +68,23 @@ class ProductService
     public function getById(int $id, array $with = array()): ?Product
     {
         return $this->model->where('id', $id)->with($with)->first();
+    }
+
+    /**
+     * @param int $id
+     * @param array $updateData
+     * @return Product|null
+     */
+    public function updateCategoriesById(int $id, array $updateData): ?Product
+    {
+        $model = $this->getById($id);
+        $model->categories()->detach();
+        $model->subCategories()->detach();
+
+        $model->categories()->attach($updateData['categories']);
+        $model->subCategories()->attach($updateData['subCategories']);
+
+        return $this->getById($id, array('categories', 'subCategories'));
     }
 
     /**
