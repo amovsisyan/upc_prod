@@ -5,6 +5,7 @@ namespace App\Exceptions;
 use App\Traits\ApiJsonResponseTrait;
 use Exception;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class Handler extends ExceptionHandler
@@ -50,12 +51,18 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Exception $exception)
     {
-        if ($exception instanceof NotFoundHttpException) {
-            if ($this->isApi($request->path())) {
-                $this->setStatusCode(404);
-                return $this->respondWithError('Not Found');
+        if ($this->isApi($request->path()) && config('app.env') !== 'local') {
+            $message = 'Internal Error';
+            $this->setStatusCode(404);
+            if ($exception instanceof NotFoundHttpException) {
+                $message = 'Not Found';
+            } elseif ($exception instanceof MethodNotAllowedHttpException) {
+                $message = 'Method Not Allowed';
             }
+
+            return $this->respondWithError($message);
         }
+
 
         return parent::render($request, $exception);
     }
