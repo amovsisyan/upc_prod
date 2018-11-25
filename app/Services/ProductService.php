@@ -62,6 +62,56 @@ class ProductService extends BasicService
 
     /**
      * @param int $id
+     * @param string $upc
+     * @param bool $cloneDeep
+     * @return Product|null
+     */
+    public function cloneById(int $id, string $upc, bool $cloneDeep): ?Product
+    {
+        $with = array('attachments', 'categories', 'subCategories');
+        $product = $this->getById($id, $with);
+        if ($upc) {
+            if ($product->getUPC() === (int)$upc) {
+                // already existed, not cloned
+                return $product;
+            }
+        }
+
+        $newProduct = $this->model->create(array('upc' => $upc));
+        $newProductId = $newProduct->getId();
+        $oldActiveVersion = $product->activeProductVersions()->first();
+
+        if ($oldActiveVersion) {
+            // create new clone for product version
+            $oldAttachments = $product->attachments()->get();
+            $newProduct->productVersions()->create($oldActiveVersion->toArray());
+
+            if ($cloneDeep) {
+                // create new clone for product attachments
+                $attachmentInsertData = $oldAttachments->map(function($item) use($newProductId) {
+                    $imageName = explode('/', $item['path'])[1];
+                    $newPath = $newProductId . '/' . $imageName;
+                    // clone also attached files
+                    Storage::disk('productAttachments')->copy($item['path'], $newPath);
+
+                    return array('path' => $newPath, 'thumbnail' => $item['thumbnail']);
+                })->toArray();
+            } else {
+                // create new clone for product attachments
+                $attachmentInsertData = $oldAttachments->map(function($item)  {
+                    return array('path' => $item['path'], 'thumbnail' => $item['thumbnail']);
+                })->toArray();
+            }
+
+            // create new attachments
+            $newProduct->attachments()->createMany($attachmentInsertData);
+        }
+
+        return $this->getById($newProductId, $with);
+    }
+
+    /**
+     * @param int $id
      * @param array $with
      * @return Product|null
      */
