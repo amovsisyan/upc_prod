@@ -87,8 +87,8 @@ class ProductController extends ApiController
     {
         $id = $request->product;
 
-        if ($updated = $this->productService->updateById((int)$id, $request->only(['upc']))) {
-            return $this->respondWithSuccess();
+        if ($cloned = $this->productService->cloneById((int)$id, (string) $request->upc, (bool)$request->clone_deep)) {
+            return $this->respond($cloned->toArray());
         }
 
         return $this->respondInternalError();
