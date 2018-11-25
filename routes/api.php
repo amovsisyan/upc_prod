@@ -10,6 +10,8 @@ Route::prefix('/v1')->group(function () {
     Route::resource('products', 'Api\ProductController')->except([
         'create', 'edit'
     ]);
+    Route::patch('products/{product}/category', 'Api\ProductController@updateCategory')->name('products.update.category');
+
     Route::resource('product-versions', 'Api\ProductVersionController')->except([
         'create', 'edit'
     ]);
