@@ -26,6 +26,15 @@ class ProductService extends BasicService
     }
 
     /**
+     * @param string $path
+     * @return \Illuminate\Database\Eloquent\Collection|null
+     */
+    public function getByPath(string $path): ?\Illuminate\Database\Eloquent\Collection
+    {
+        return $this->model->attachments()->where('path', $path)->get();
+    }
+
+    /**
      * @param array $storeData
      * @return Product|null
      */
@@ -166,5 +175,29 @@ class ProductService extends BasicService
         }
 
         return collect($attachments);
+    }
+
+
+    /**
+     * @param int $id
+     * @return bool
+     * @throws \Exception
+     */
+    public function delete(int $id): bool
+    {
+        $product = $this->getById($id, array('attachments'));
+        $attachments = $product->attachments;
+
+        foreach ($attachments as $attachment) {
+            if ($this->getByPath($attachment['path'])->count() <= 1) {
+                Storage::disk('productAttachments')->delete($attachment['path']);
+            }
+        }
+
+        if (!count(Storage::disk('productAttachments')->allFiles($id))) {
+            Storage::disk('productAttachments')->deleteDirectory($id);
+        }
+
+        return (bool)$product->delete();
     }
 }

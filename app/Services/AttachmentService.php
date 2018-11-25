@@ -72,6 +72,16 @@ class AttachmentService extends BasicService
     }
 
     /**
+     * @param string $path
+     * @return \Illuminate\Database\Eloquent\Collection|null
+     */
+    public function getByPath(string $path): ?\Illuminate\Database\Eloquent\Collection
+    {
+        return $this->model->where('path', $path)->get();
+    }
+
+
+    /**
      * @param int $id
      * @return bool
      * @throws \Exception
@@ -80,7 +90,9 @@ class AttachmentService extends BasicService
     {
         $attachment = $this->getById($id);
 
-        Storage::disk('productAttachments')->delete($attachment->getPath());// todo put in mutators after
+        if ($this->getByPath($attachment['path'])->count() <= 1) {
+            Storage::disk('productAttachments')->delete($attachment->getPath());// todo put in mutators after
+        }
 
         return parent::delete($id);
     }
