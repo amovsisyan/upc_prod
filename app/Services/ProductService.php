@@ -9,7 +9,11 @@
 namespace App\Services;
 
 
+use App\Helpers\FileHelper;
 use App\Models\Product;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\File;
 
 class ProductService
 {
@@ -27,7 +31,33 @@ class ProductService
      */
     public function store(array $storeData): ?Product
     {
-        return $this->model->create($storeData);
+        // STEP 1 create product
+        $stored = $this->model->create(array('upc' => $storeData['upc']));
+
+        // STEP 2 attach category/subcategory
+        $stored->categories()->attach($storeData['categories']);
+        $stored->subCategories()->attach($storeData['subCategories']);
+
+        // STEP 3 store related attachments
+        $videos = $storeData['videos'] ?? array();
+        $images = $storeData['images'] ?? array();
+        $files = array_merge($videos, $images);
+        $this->storeAttachments($stored, $files);
+
+        // STEP 4 Attach new product version
+        $prodVersionStoredData = array(
+            'brand_id' => $storeData['brand_id'],
+            'title' => $storeData['title'],
+            'description' => $storeData['description'],
+            'width' => $storeData['width'],
+            'height' => $storeData['height'],
+            'length' => $storeData['length'],
+            'weight' => $storeData['weight'],
+            'active' => 1
+        );
+        $stored->productVersions()->create($prodVersionStoredData);
+
+        return $this->getById($stored->getId(), array('categories', 'subCategories', 'productVersions', 'attachments'));
     }
 
     /**
@@ -38,5 +68,36 @@ class ProductService
     public function getById(int $id, array $with = array()): ?Product
     {
         return $this->model->where('id', $id)->with($with)->first();
+    }
+
+    /**
+     * @param Product $product
+     * @param $files
+     * @return Collection
+     */
+    private function storeAttachments(Product $product, $files): Collection
+    {
+        $attachments = array();
+        $disk = 'productAttachments';
+        $prodId = $product->getId();
+
+        foreach ($files as $file) {
+            $fileName = FileHelper::makeFileName($file->getClientOriginalExtension(), $disk);
+            $storeDatum  =array(
+                'product_id' => $prodId,
+                'path' => $prodId . '/' . $fileName,
+                'thumbnail' => FileHelper::getDimensions($file),
+            );
+
+            $attachments[] = $product->attachments()->create($storeDatum);
+
+            Storage::disk($disk)->put(
+                '/' . $prodId . '/' . $fileName,
+                File::get($file),
+                'public'
+            ); // todo put in mutators after
+        }
+
+        return collect($attachments);
     }
 }

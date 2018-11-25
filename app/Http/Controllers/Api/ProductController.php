@@ -44,7 +44,14 @@ class ProductController extends ApiController
      */
     public function store(Store $request): ?JsonResponse
     {
-        if ($new = $this->productService->store($request->only(['upc']))) {
+        if ($new = $this->productService->store($request->only(
+            [
+                'upc',
+                'categories', 'subCategories', // for category, subcategory part
+                'images', 'videos', // for attachment part
+                'brand_id', 'title', 'description', 'width', 'height', 'length', 'weight' // for product version part
+            ]
+        ))) {
             return $this->respond($new->toArray());
         }
 

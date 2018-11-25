@@ -9,6 +9,7 @@
 namespace App\Services;
 
 
+use App\Helpers\FileHelper;
 use App\Models\Attachment;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
@@ -35,21 +36,23 @@ class AttachmentService extends BasicService
         $videos = $storeData['videos'] ?? array();
         $images = $storeData['images'] ?? array();
         $files = array_merge($videos, $images);
+        $disk = 'productAttachments';
+        $prodId = $storeData['product_id'];
 
         foreach ($files as $file) {
-            $fileName = $this->makeFileName($file->getClientOriginalExtension());
+            $fileName = FileHelper::makeFileName($file->getClientOriginalExtension(), $disk);
             $storeDatum  =array(
-                'product_id' => $storeData['product_id'],
-                'path' => $storeData['product_id'] . '/' . $fileName,
-                'thumbnail' => $this->getDimensions($file),
+                'product_id' => $prodId,
+                'path' => $prodId . '/' . $fileName,
+                'thumbnail' => FileHelper::getDimensions($file),
             );
 
             $newOne = $this->model->create($storeDatum);
 
             $newOnes[] = $newOne;
 
-            Storage::disk('productAttachments')->put(
-                '/' . $storeData['product_id'] . '/' . $fileName,
+            Storage::disk($disk)->put(
+                '/' . $prodId . '/' . $fileName,
                 File::get($file),
                 'public'
             ); // todo put in mutators after
@@ -80,29 +83,5 @@ class AttachmentService extends BasicService
         Storage::disk('productAttachments')->delete($attachment->getPath());// todo put in mutators after
 
         return parent::delete($id);
-    }
-
-    /**
-     * @param string $extension
-     * @return string
-     */
-    private function makeFileName(string $extension): string
-    {
-        return md5(microtime()).'.'.$extension;
-    }
-
-    /**
-     * @param $file
-     * @return string
-     */
-    private function getDimensions($file)
-    {
-        // sure not the best way
-        $dmsPosition = 3;
-        $dmsData = explode('"', getimagesize($file)[$dmsPosition]);
-
-        $widthPosition = 1;
-        $heightPosition = 3;
-        return ($dmsData[$widthPosition] ?? 0) . 'x' . ($dmsData[$heightPosition] ?? 0);
     }
 }
