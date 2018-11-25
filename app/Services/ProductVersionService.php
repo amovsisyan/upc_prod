@@ -39,4 +39,35 @@ class ProductVersionService extends BasicService
     {
         return $this->model->where('id', $id)->with($with)->first();
     }
+
+    /**
+     * @param int $id
+     * @param array $updateData
+     * @return ProductVersion|null
+     */
+    public function makeVersionById(int $id, array $updateData): ?ProductVersion
+    {
+        if ($alreadyExists = $this->model->where($updateData)->first()) {
+            // if such version already exists, return that one
+            return $alreadyExists;
+        }
+
+        // such version does not exists
+        if ((int)$updateData['active'] === 1) {
+            // if we want active version, need to check all old actives for that prod id and set it 0
+            $this->deactivateAllByProdVersion((int)$updateData['product_id']);
+        }
+
+        // in the last, save new version
+        return $this->store($updateData);
+    }
+
+    /**
+     * @param int $productId
+     * @return mixed
+     */
+    private function deactivateAllByProdVersion(int $productId)
+    {
+        return $this->model->where('product_id', $productId)->update(['active' => 0]);
+    }
 }
