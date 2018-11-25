@@ -83,9 +83,9 @@ class ProductVersionController extends ApiController
         $id = $request->product_version;
 
         if ($updated = $this->productVersionService
-            ->updateById((int)$id, $request->only(array('product_id', 'brand_id', 'title', 'description', 'width', 'height', 'length', 'weight','active')))
+            ->makeVersionById((int)$id, $request->only(array('product_id', 'brand_id', 'title', 'description', 'width', 'height', 'length', 'weight','active')))
         ) {
-            return $this->respondWithSuccess();
+            return $this->respond($updated->toArray());
         }
 
         return $this->respondInternalError();
