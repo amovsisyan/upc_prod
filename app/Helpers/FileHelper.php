@@ -39,6 +39,6 @@ class FileHelper
             return md5(microtime()).'.'.$extension;
         }
 
-        return md5(microtime()).'.'.$extension;
+        return strtoupper($forDisk) . md5(microtime()).'.'.$extension;
     }
 }

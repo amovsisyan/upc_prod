@@ -11,6 +11,8 @@ Route::prefix('/v1')->group(function () {
         'create', 'edit'
     ]);
     Route::patch('products/{product}/category', 'Api\ProductController@updateCategory')->name('products.update.category');
+    Route::post('products/bulk', 'Api\ProductController@storeBulk')->name('products.store.bulk');
+    Route::get('products/bulk/sample', 'Api\ProductController@sampleBulk')->name('products.sample.bulk');
 
     Route::resource('product-versions', 'Api\ProductVersionController')->except([
         'create', 'edit'

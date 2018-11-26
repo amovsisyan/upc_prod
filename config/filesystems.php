@@ -66,6 +66,28 @@ return [
             'visibility' => 'public',
         ],
 
+        /**
+         * This is path for all samples
+         * f.e. company logos
+         */
+        'samples' => [
+            'driver' => 'local',
+            'root' => storage_path('app/public/samples'),
+            'url' => env('APP_URL').'/storage/samples',
+            'visibility' => 'public',
+        ],
+
+        /**
+         * This is path for all samples
+         * f.e. company logos
+         */
+        'productBulk' => [
+            'driver' => 'local',
+            'root' => storage_path('app/public/bulk/product'),
+            'url' => env('APP_URL').'/storage/bulk/product',
+            'visibility' => 'public',
+        ],
+
         's3' => [
             'driver' => 's3',
             'key' => env('AWS_ACCESS_KEY_ID'),
