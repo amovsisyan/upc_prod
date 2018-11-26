@@ -5,10 +5,13 @@ namespace App\Http\Controllers\Api;
 use App\Http\Requests\Api\Product\Destroy;
 use App\Http\Requests\Api\Product\Show;
 use App\Http\Requests\Api\Product\Store;
+use App\Http\Requests\Api\Product\StoreBulk;
 use App\Http\Requests\Api\Product\Update;
 use App\Http\Requests\Api\Product\UpdateCategory;
+use App\Jobs\ProcessProductCreationFromFile;
 use App\Services\ProductService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Response;
 
 class ProductController extends ApiController
 {
@@ -57,6 +60,30 @@ class ProductController extends ApiController
         }
 
         return $this->respondInternalError();
+    }
+
+    /**
+     * @param StoreBulk $request
+     * @return JsonResponse|null
+     */
+    public function storeBulk(StoreBulk $request) : ?JsonResponse
+    {
+        if ($bulkFileStored = $this->productService->storeBulkFile($request->only(['file']))) {
+            ProcessProductCreationFromFile::dispatch($this->productService)->delay(now()->addSeconds(10));;
+            return $this->respondWithSuccess('File stored successfully. You will get email when it will be proceeded.');
+        }
+
+        return $this->respondInternalError();
+    }
+
+    /**
+     * @return mixed
+     */
+    public function sampleBulk()
+    {
+        $sample = $this->productService->getProductCSVBulkSample();
+
+        return Response::download($sample);
     }
 
     /**

@@ -10,7 +10,9 @@ namespace App\Services;
 
 
 use App\Helpers\FileHelper;
+use App\Helpers\SampleStandards;
 use App\Models\Product;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\File;
@@ -158,20 +160,31 @@ class ProductService extends BasicService
         $prodId = $product->getId();
 
         foreach ($files as $file) {
-            $fileName = FileHelper::makeFileName($file->getClientOriginalExtension(), $disk);
-            $storeDatum  =array(
-                'product_id' => $prodId,
-                'path' => $prodId . '/' . $fileName,
-                'thumbnail' => FileHelper::getDimensions($file),
-            );
+            if ($file instanceof UploadedFile) {
+                $fileName = FileHelper::makeFileName($file->getClientOriginalExtension(), $disk);
+                $storeDatum  =array(
+                    'product_id' => $prodId,
+                    'path' => $prodId . '/' . $fileName,
+                    'thumbnail' => FileHelper::getDimensions($file),
+                );
 
-            $attachments[] = $product->attachments()->create($storeDatum);
+                $attachments[] = $product->attachments()->create($storeDatum);
 
-            Storage::disk($disk)->put(
-                '/' . $prodId . '/' . $fileName,
-                File::get($file),
-                'public'
-            ); // todo put in mutators after
+                Storage::disk($disk)->put(
+                    '/' . $prodId . '/' . $fileName,
+                    File::get($file),
+                    'public'
+                ); // todo put in mutators after
+            } else {
+                $externalLink = $file;
+                $fileName = FileHelper::makeFileName('jpg', $disk);
+
+                Storage::disk('productAttachments')->makeDirectory('/' . $prodId);
+                $to = Storage::disk('productAttachments')->path('/' . $prodId . '/' . $fileName);
+
+                copy($externalLink, $to);
+            }
+
         }
 
         return collect($attachments);
@@ -199,5 +212,57 @@ class ProductService extends BasicService
         }
 
         return (bool)$product->delete();
+    }
+
+    /**
+     * @param $storeData
+     * @return bool
+     */
+    public function storeBulkFile($storeData)
+    {
+        $file = $storeData['file'];
+        $fileName = FileHelper::makeFileName($file->getClientOriginalExtension(), 'productBulk');
+
+        return Storage::disk('productBulk')->put(
+            $fileName,
+            File::get($file),
+            'public'
+        );
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getProductCSVBulkSample()
+    {
+        $path = Storage::disk('samples')->path('productCSVBulkSample.csv');
+        if (!file_exists($path)) {
+            $file = fopen($path, "w+");
+            fputcsv($file, SampleStandards::PRODUCT_CREATE_BULK);
+            fclose($file);
+        }
+
+        return $path;
+    }
+
+    /**
+     * @param array $line
+     * @return array
+     */
+    public function getCSVStandardStructure(array $line): array
+    {
+        return array(
+            'upc' => $line[SampleStandards::PRODUCT_CREATE_BULK_UPC],
+            'categories' => array($line[SampleStandards::PRODUCT_CREATE_BULK_CATEGORY]),
+            'subCategories' => array($line[SampleStandards::PRODUCT_CREATE_BULK_SUB_CATEGORY]),
+            'images' => array($line[SampleStandards::PRODUCT_CREATE_BULK_IMAGE]),
+            'brand_id' => $line[SampleStandards::PRODUCT_CREATE_BULK_BRAND_ID],
+            'title' => $line[SampleStandards::PRODUCT_CREATE_BULK_TITLE],
+            'description' => $line[SampleStandards::PRODUCT_CREATE_BULK_DESCRIPTION],
+            'width' => $line[SampleStandards::PRODUCT_CREATE_BULK_WIDTH],
+            'height' => $line[SampleStandards::PRODUCT_CREATE_BULK_HEIGHT],
+            'length' => $line[SampleStandards::PRODUCT_CREATE_BULK_LENGTH],
+            'weight' => $line[SampleStandards::PRODUCT_CREATE_BULK_WEIGHT],
+        );
     }
 }
