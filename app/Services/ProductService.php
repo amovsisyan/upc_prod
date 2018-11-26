@@ -140,10 +140,10 @@ class ProductService extends BasicService
     {
         $model = $this->getById($id);
         $model->categories()->detach();
-        $model->subCategories()->detach();
+        isset($updateData['subCategories']) ? $model->subCategories()->detach() : null;
 
         $model->categories()->attach($updateData['categories']);
-        $model->subCategories()->attach($updateData['subCategories']);
+        isset($updateData['subCategories']) ? $model->subCategories()->attach($updateData['subCategories']) : null;
 
         return $this->getById($id, array('categories', 'subCategories'));
     }

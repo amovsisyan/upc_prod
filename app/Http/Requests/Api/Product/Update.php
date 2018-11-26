@@ -29,7 +29,7 @@ class Update extends ApiRequestCombined
 
         return [
             'product' => ['required', Rule::exists($tableName, 'id')],
-            'upc' => ['integer', 'max:999999999', Rule::unique($tableName, 'upc')->whereNot('id', $productId)],
+            'upc' => ['required', 'integer', 'max:999999999', Rule::unique($tableName, 'upc')->whereNot('id', $productId)],
             'clone_deep' => ['integer', Rule::in(0, 1)]
         ];
     }
